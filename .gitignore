@@ -1,0 +1,7 @@
+# konfigurasi tooling lokal, bukan bagian dari aplikasi
+.claude/
+
+# sampah OS
+Thumbs.db
+desktop.ini
+.DS_Store

@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tumbuh">
+<meta name="theme-color" content="#F6F1ED" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141A18" media="(prefers-color-scheme: dark)">
+<title>Tumbuh</title>
+
+<style>
+:root{
+  --bg:#F6F1ED;
+  --surface:#FFFFFF;
+  --ink:#1B2B26;
+  --muted:#56615C;
+  --teal:#12655A;
+  --teal-soft:#DDEDE8;
+  --coral:#B83A2C;
+  --coral-soft:#FBE2DE;
+
+  --butter:#FDEFC4;
+  --mint:#DCEFDC;
+  --blush:#FADDE3;
+  --lilac:#EADBF6;
+  --sky:#D8E8FA;
+  --peach:#FDE3D0;
+
+  --shadow:0 2px 12px rgba(27,43,38,.055);
+
+  --f-head:ui-rounded,"SF Pro Rounded","Avenir Next Rounded",Nunito,"Segoe UI",system-ui,sans-serif;
+  --f-body:"Avenir Next",Avenir,"Segoe UI",system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#141A18;
+    --surface:#1E2724;
+    --ink:#EDF3F0;
+    --muted:#9AA7A1;
+    --teal:#5FC9AE;
+    --teal-soft:#1D3A34;
+    --coral:#F58074;
+    --coral-soft:#3A2320;
+
+    --butter:#3A3320;
+    --mint:#22352A;
+    --blush:#3A262C;
+    --lilac:#2F2739;
+    --sky:#1F2C3A;
+    --peach:#3A2C22;
+
+    --shadow:0 2px 12px rgba(0,0,0,.25);
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:var(--f-body);
+  font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:calc(78px + env(safe-area-inset-bottom));
+}
+:focus-visible{outline:2.5px solid var(--teal);outline-offset:2px;border-radius:6px}
+
+/* ---------- kepala ---------- */
+.mast{
+  position:sticky;top:0;z-index:20;background:var(--bg);
+  padding:calc(12px + env(safe-area-inset-top)) 20px 12px;
+}
+.mast .date{font-size:13.5px;color:var(--muted)}
+.mast h1{font-family:var(--f-head);font-size:27px;font-weight:700;letter-spacing:-.02em;margin:1px 0 0;line-height:1.2}
+.mast .age{
+  float:right;margin-top:6px;font-size:12.5px;font-weight:600;color:var(--teal);
+  background:var(--teal-soft);border-radius:999px;padding:5px 12px;
+}
+.backtoday{
+  float:right;margin-top:6px;font-family:var(--f-head);font-size:12.5px;font-weight:600;
+  color:var(--surface);background:var(--teal);border:none;border-radius:999px;padding:6px 13px;cursor:pointer;
+}
+
+/* ---------- kerangka ---------- */
+main{padding:0 20px;max-width:520px;margin:0 auto}
+.page{display:none}
+.page.on{display:block;animation:fade .2s ease-out}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .page.on{animation:none}
+  .bar i,.check,.card{transition:none!important}
+}
+h2.head{font-family:var(--f-head);font-size:18.5px;font-weight:700;letter-spacing:-.015em;margin:26px 0 11px}
+.card{background:var(--surface);border-radius:22px;box-shadow:var(--shadow)}
+
+/* ---------- cincin kemajuan (dipakai minggu & kalender) ---------- */
+.ring{position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(var(--teal) calc(var(--p) * 3.6deg), var(--track,transparent) 0)}
+.ring::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--bg)}
+
+/* ---------- strip minggu ---------- */
+.week{display:flex;gap:5px;margin:2px 0 4px}
+.wday{flex:1;border:none;background:none;padding:0;cursor:pointer;display:grid;gap:5px;justify-items:center}
+.wday .l{font-size:11px;font-weight:600;color:var(--muted)}
+.wday .c{position:relative;width:100%;max-width:42px;aspect-ratio:1}
+.wday .n{position:relative;z-index:1;display:grid;place-items:center;width:100%;height:100%;
+  font-family:var(--f-head);font-size:14.5px;font-weight:600}
+.wday.today .n{color:var(--coral);font-weight:700}
+.wday.sel .ring::after{background:var(--teal)}
+.wday.sel .n{color:var(--surface)}
+.wday.future .n{color:var(--muted);font-weight:500}
+
+/* ---------- spanduk ---------- */
+.hero{position:relative;overflow:hidden;background:var(--blush);border-radius:24px;padding:19px 20px 18px;margin-top:12px}
+.hero::before{content:"";position:absolute;right:-34px;top:-46px;width:158px;height:158px;border-radius:50%;background:var(--butter);opacity:.8}
+.hero::after{content:"";position:absolute;right:46px;bottom:-58px;width:118px;height:118px;border-radius:50%;background:var(--lilac);opacity:.65}
+.hero>*{position:relative}
+.hero h2{font-family:var(--f-head);font-size:21px;font-weight:700;letter-spacing:-.02em;line-height:1.28;margin:0;max-width:15em}
+.hero p{margin:7px 0 0;font-size:14px;color:var(--muted);max-width:19em}
+
+/* ---------- takaran ---------- */
+.gauges{display:flex;gap:12px;margin-top:14px}
+.gauge{flex:1;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);padding:15px 16px 16px}
+.gauge .lab{font-size:13px;color:var(--muted);font-weight:500}
+.gauge .val{font-family:var(--f-head);font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.2;margin-top:1px}
+.gauge .val small{font-family:var(--f-body);font-size:12.5px;font-weight:500;color:var(--muted);letter-spacing:0;margin-left:3px}
+.bar{height:9px;border-radius:999px;background:var(--bg);margin-top:11px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:999px;background:var(--teal);width:0;transition:width .45s cubic-bezier(.4,0,.2,1)}
+.bar i.over{background:var(--coral)}
+
+/* ---------- kartu waktu makan ---------- */
+.meals{display:flex;flex-direction:column;gap:11px}
+.meal{
+  display:flex;align-items:center;gap:13px;
+  background:var(--c);border-radius:22px;padding:14px 15px;
+  border:2px solid transparent;
+}
+.meal[data-i]{cursor:pointer}
+.meal[data-i]:active{transform:scale(.988)}
+.meal.next{border-color:var(--teal)}
+.art{
+  flex:0 0 46px;height:46px;border-radius:50%;background:var(--surface);
+  display:grid;place-items:center;color:var(--ink);
+}
+.art svg{width:27px;height:27px;display:block}
+.meal .body{flex:1;min-width:0}
+.meal .top{display:flex;justify-content:space-between;gap:9px;align-items:baseline}
+.time{font-size:12.5px;font-weight:600;color:var(--muted)}
+.meal.late .time{color:var(--coral)}
+.meal.next .time{color:var(--teal)}
+.kcal{font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.dish{font-family:var(--f-head);font-size:16.5px;font-weight:600;letter-spacing:-.01em;line-height:1.32;margin-top:2px}
+.note{font-size:13.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+.meal.done .dish,.meal.done .note{color:var(--muted)}
+.meal.done .art{opacity:.6}
+.tag{
+  display:inline-block;font-size:11.5px;font-weight:600;
+  background:var(--surface);color:var(--muted);
+  padding:3px 10px;border-radius:999px;margin-top:8px;margin-right:5px;
+}
+.next-pill{
+  display:inline-block;font-size:11px;font-weight:700;letter-spacing:.02em;
+  background:var(--teal);color:var(--surface);
+  padding:3px 10px;border-radius:999px;margin-top:8px;
+}
+.check{
+  flex:0 0 27px;height:27px;border-radius:50%;
+  border:2px solid var(--muted);background:transparent;
+  display:grid;place-items:center;transition:.18s;padding:0;cursor:pointer;
+}
+.check svg{width:14px;height:14px;fill:none;stroke:var(--surface);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:.18s}
+.meal.done .check{background:var(--teal);border-color:var(--teal)}
+.meal.done .check svg{opacity:1}
+
+/* ---------- pemilih hari (menu) ---------- */
+.days{display:flex;gap:7px;padding:4px 0 2px}
+.day{
+  flex:1;padding:10px 2px;border-radius:16px;border:none;
+  background:var(--surface);box-shadow:var(--shadow);
+  font-family:var(--f-head);font-size:13.5px;font-weight:600;color:var(--muted);cursor:pointer;
+}
+.day.on{background:var(--teal);color:var(--surface)}
+
+/* ---------- kalender ---------- */
+.calbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 16px}
+.calbar h2{font-family:var(--f-head);font-size:19px;font-weight:700;letter-spacing:-.015em;margin:0;flex:1;text-align:center}
+.navbtn{
+  flex:0 0 38px;height:38px;border-radius:50%;border:none;
+  background:var(--surface);box-shadow:var(--shadow);color:var(--ink);
+  display:grid;place-items:center;cursor:pointer;
+}
+.navbtn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.navbtn:disabled{opacity:.35;cursor:default}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px 5px}
+.dow{text-align:center;font-size:11px;font-weight:600;color:var(--muted);padding-bottom:2px}
+.cell{position:relative;aspect-ratio:1;border:none;background:none;padding:0;cursor:pointer}
+.cell .n{position:relative;z-index:1;display:grid;place-items:center;width:100%;height:100%;
+  font-family:var(--f-head);font-size:14px;font-weight:600}
+.cell.blank{visibility:hidden;pointer-events:none}
+.cell.today .n{color:var(--coral);font-weight:700}
+.cell.sel .ring::after{background:var(--teal)}
+.cell.sel .n{color:var(--surface)}
+.cell.future{cursor:default}
+.cell.future .n{color:var(--muted);font-weight:500}
+.legend-cal{display:flex;gap:16px;justify-content:center;margin-top:16px;font-size:12.5px;color:var(--muted)}
+.legend-cal span{display:flex;align-items:center;gap:6px}
+.swatch{position:relative;width:17px;height:17px;border-radius:50%;flex:0 0 17px}
+.swatch::after{content:"";position:absolute;inset:2.5px;border-radius:50%;background:var(--bg)}
+.statrow{display:flex;gap:11px;margin-top:12px}
+.statbox{flex:1;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);padding:14px 15px}
+.statbox .v{font-family:var(--f-head);font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.statbox .v small{font-family:var(--f-body);font-size:12.5px;font-weight:500;color:var(--muted);margin-left:4px}
+.statbox .l{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.35}
+
+/* ---------- kurva ---------- */
+.chartwrap{padding:18px 14px 6px}
+svg.chart{width:100%;height:auto;display:block;overflow:visible}
+svg.chart text{font-family:var(--f-body);font-weight:500}
+svg.chart text.callout{font-family:var(--f-head);font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:7px 15px;padding:4px 18px 16px;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:4px;margin-right:6px;vertical-align:-1px}
+.verdict{margin:0;padding:16px 18px;border-top:1.5px solid var(--bg);font-size:14.5px;line-height:1.6;color:var(--muted)}
+.verdict .st{font-family:var(--f-head);font-weight:700}
+.verdict .st.ok{color:var(--teal)}
+.verdict .st.warn{color:#8A5E0F}
+.verdict .st.bad{color:var(--coral)}
+@media (prefers-color-scheme:dark){.verdict .st.warn{color:#E5B45E}}
+
+/* ---------- isian ---------- */
+.row{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1.5px solid var(--bg)}
+.row:last-child{border-bottom:none}
+.row label{flex:1;font-size:15.5px}
+input[type=number]{
+  width:106px;padding:10px 13px;border-radius:14px;border:none;background:var(--bg);
+  color:var(--ink);font-size:16px;text-align:right;
+  font-family:var(--f-head);font-weight:600;font-variant-numeric:tabular-nums;
+}
+.btn{
+  width:100%;padding:16px;border:none;border-radius:18px;
+  background:var(--teal);color:var(--surface);
+  font-family:var(--f-head);font-size:16px;font-weight:600;letter-spacing:-.01em;
+  cursor:pointer;margin-top:12px;
+}
+.btn:active{opacity:.8}
+
+/* ---------- riwayat berat ---------- */
+.logrow{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1.5px solid var(--bg);font-size:15.5px}
+.logrow:last-child{border-bottom:none}
+.logrow em{font-size:12.5px;font-style:normal;color:var(--muted);margin-left:7px}
+.logrow .w{font-family:var(--f-head);font-weight:700;font-variant-numeric:tabular-nums;margin-right:4px}
+.del{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:2px 6px;line-height:1;border-radius:999px}
+.empty{padding:28px 18px;text-align:center;color:var(--muted);font-size:14.5px}
+.empty svg{width:46px;height:46px;display:block;margin:0 auto 10px;color:var(--muted);opacity:.55}
+
+/* ---------- daftar nilai ---------- */
+.leader{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1.5px solid var(--bg);font-size:15.5px}
+.leader:last-child{border-bottom:none}
+.leader span:first-child{flex:1}
+.leader .val{font-size:13px;font-weight:600;color:var(--teal);background:var(--teal-soft);padding:4px 11px;border-radius:999px;white-space:nowrap}
+.leader .val.plain{color:var(--muted);background:var(--bg)}
+
+/* ---------- aturan ---------- */
+.tip{padding:15px 18px;border-bottom:1.5px solid var(--bg)}
+.tip:last-child{border-bottom:none}
+.tip h3{font-family:var(--f-head);margin:0 0 4px;font-size:16px;font-weight:600;letter-spacing:-.01em;line-height:1.35;display:flex;gap:10px}
+.tip h3::before{content:"";flex:0 0 8px;height:8px;border-radius:50%;background:var(--teal);margin-top:8px}
+.tip p{margin:0;font-size:14px;color:var(--muted);line-height:1.55;padding-left:18px}
+.alert{background:var(--coral-soft);border-radius:22px;padding:17px 18px;display:flex;gap:13px}
+.alert .mark{flex:0 0 34px;height:34px;border-radius:50%;background:var(--surface);display:grid;place-items:center;color:var(--coral)}
+.alert .mark svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.alert h3{font-family:var(--f-head);margin:1px 0 5px;font-size:16px;font-weight:700;color:var(--coral);line-height:1.35}
+.alert p{margin:0;font-size:14px;line-height:1.55}
+.foot{font-size:13.5px;color:var(--muted);padding:16px 4px 4px;line-height:1.6}
+
+/* ---------- tab ---------- */
+.tabs{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;
+  background:var(--surface);box-shadow:0 -2px 18px rgba(27,43,38,.06);
+  padding:9px 2px calc(6px + env(safe-area-inset-bottom));
+  border-radius:26px 26px 0 0;
+}
+.tab{
+  flex:1;background:none;border:none;padding:6px 0 4px;cursor:pointer;color:var(--muted);
+  display:grid;justify-items:center;gap:3px;
+}
+.tab svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.tab span{font-family:var(--f-head);font-size:10.5px;font-weight:600;white-space:nowrap}
+.tab.on{color:var(--coral)}
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <span class="age" id="mastAge"></span>
+  <button class="backtoday" id="backToday" hidden>Hari ini</button>
+  <div class="date" id="navSub"></div>
+  <h1 id="navTitle">Hari Ini</h1>
+</header>
+
+<main>
+
+<!-- ============ HARI INI ============ -->
+<section class="page on" id="p-today">
+  <div class="week" id="weekStrip"></div>
+
+  <div class="hero">
+    <h2>Sedikit demi sedikit, setiap suap berarti</h2>
+    <p id="heroSub"></p>
+  </div>
+
+  <div class="gauges">
+    <div class="gauge">
+      <div class="lab">Kalori</div>
+      <div class="val"><span id="kcalNow">0</span><small id="kcalGoal">/ 1.250 kkal</small></div>
+      <div class="bar"><i id="kcalBar"></i></div>
+    </div>
+    <div class="gauge">
+      <div class="lab">Susu</div>
+      <div class="val"><span id="milkNow">0</span><small id="milkNote">/ 400 ml</small></div>
+      <div class="bar"><i id="milkBar"></i></div>
+    </div>
+  </div>
+
+  <h2 class="head">Jadwal makan</h2>
+  <div class="meals" id="todayList"></div>
+
+  <p class="foot">Ketuk kartu untuk menandai selesai. Lupa mencatat? Pilih tanggalnya di strip atas atau di Kalender — catatan lama tetap bisa diisi.</p>
+</section>
+
+<!-- ============ MENU ============ -->
+<section class="page" id="p-menu">
+  <div class="days" id="dayPicker"></div>
+  <div class="meals" id="menuList" style="margin-top:12px"></div>
+
+  <h2 class="head">Porsi sekali makan besar</h2>
+  <div class="card">
+    <div class="leader"><span>Nasi / karbohidrat</span><span class="val plain">4–5 sdm</span></div>
+    <div class="leader"><span>Protein hewani</span><span class="val plain">35–40 g</span></div>
+    <div class="leader"><span>Protein nabati</span><span class="val plain">½ potong</span></div>
+    <div class="leader"><span>Sayur</span><span class="val plain">2–3 sdm</span></div>
+    <div class="leader"><span>Lemak tambahan</span><span class="val plain">1 sdt</span></div>
+  </div>
+
+  <p class="foot">Menu berulang tiap minggu. Tukar lauk sesuai yang ada di pasar — yang penting komposisinya tetap.</p>
+</section>
+
+<!-- ============ KALENDER ============ -->
+<section class="page" id="p-cal">
+  <div class="calbar">
+    <button class="navbtn" id="calPrev" aria-label="Bulan sebelumnya"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <h2 id="calTitle"></h2>
+    <button class="navbtn" id="calNext" aria-label="Bulan berikutnya"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+  <div class="calgrid" id="calGrid"></div>
+
+  <div class="legend-cal">
+    <span><i class="swatch" style="background:conic-gradient(var(--teal) 360deg,transparent 0)"></i>Lengkap</span>
+    <span><i class="swatch" style="background:conic-gradient(var(--teal) 180deg,var(--teal-soft) 0)"></i>Sebagian</span>
+    <span><i class="swatch" style="background:var(--teal-soft);opacity:.5"></i>Belum dicatat</span>
+  </div>
+
+  <h2 class="head" id="monthHead">Bulan ini</h2>
+  <div class="statrow">
+    <div class="statbox"><div class="v" id="stDays">0<small id="stDaysOf">/ 0</small></div><div class="l">hari tercatat</div></div>
+    <div class="statbox"><div class="v" id="stFull">0</div><div class="l">hari lengkap 6 waktu makan</div></div>
+  </div>
+  <div class="statrow">
+    <div class="statbox"><div class="v" id="stAvg">0<small>kkal</small></div><div class="l">rata-rata per hari tercatat</div></div>
+    <div class="statbox"><div class="v" id="stMilk">0</div><div class="l">hari susu lewat 400 ml</div></div>
+  </div>
+
+  <p class="foot">Ketuk tanggal untuk membuka catatan hari itu. Yang penting bukan angka satu hari, tapi polanya sepanjang bulan.</p>
+</section>
+
+<!-- ============ BERAT ============ -->
+<section class="page" id="p-weight">
+  <h2 class="head" style="margin-top:4px">Berat menurut umur</h2>
+  <div class="card">
+    <div class="chartwrap"><svg class="chart" id="chart" viewBox="0 0 340 250" role="img" aria-label="Grafik berat badan terhadap umur"></svg></div>
+    <div class="legend">
+      <span><i style="background:var(--mint)"></i>Normal</span>
+      <span><i style="background:var(--butter)"></i>Berat kurang</span>
+      <span><i style="background:var(--blush)"></i>Sangat kurang</span>
+      <span><i style="background:var(--teal);border-radius:50%"></i>Anak Anda</span>
+    </div>
+    <p class="verdict" id="verdict"></p>
+  </div>
+
+  <h2 class="head">Catat penimbangan</h2>
+  <div class="card">
+    <div class="row"><label for="inAge">Umur (bulan)</label><input type="number" id="inAge" min="0" max="60" step="1" inputmode="numeric" placeholder="30"></div>
+    <div class="row"><label for="inKg">Berat (kg)</label><input type="number" id="inKg" min="2" max="30" step="0.1" inputmode="decimal" placeholder="12,0"></div>
+  </div>
+  <button class="btn" id="addBtn">Simpan penimbangan</button>
+
+  <h2 class="head">Riwayat</h2>
+  <div class="card" id="logList"></div>
+
+  <p class="foot">Timbang sebulan sekali di jam yang sama, sebaiknya pagi sebelum makan. Menimbang terlalu sering membuat tren sulit dibaca.</p>
+</section>
+
+<!-- ============ PANDUAN ============ -->
+<section class="page" id="p-tips">
+  <h2 class="head" style="margin-top:4px">Penambah kalori tanpa menambah porsi</h2>
+  <div class="card" id="boostList"></div>
+  <p class="foot">Selipkan 3–4 item ini setiap hari. Totalnya ±150–200 kkal ekstra — cukup untuk mendorong kenaikan 0,2–0,3 kg per bulan.</p>
+
+  <h2 class="head">Aturan yang paling menentukan</h2>
+  <div class="card" id="ruleList"></div>
+
+  <h2 class="head">Periksakan ke dokter bila</h2>
+  <div class="alert">
+    <div class="mark"><svg viewBox="0 0 24 24"><path d="M12 8v5"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></div>
+    <div>
+      <h3>Berat tidak naik 2 bulan berturut-turut</h3>
+      <p>Atau berat turun, anak sering sakit, diare berulang, dan tampak lesu. Kemungkinan ada anemia, cacingan, atau gangguan penyerapan yang tidak bisa diperbaiki hanya lewat menu.</p>
+    </div>
+  </div>
+
+  <h2 class="head">Pasang di layar utama</h2>
+  <div class="card"><div class="tip"><h3>Jadikan aplikasi iPhone</h3><p>Buka halaman ini di Safari, ketuk tombol Bagikan, lalu pilih <b>Tambahkan ke Layar Utama</b>. Aplikasi akan terbuka layar penuh tanpa bilah browser, dan data tersimpan di perangkat Anda.</p></div></div>
+
+  <p class="foot">Panduan gizi umum berdasarkan standar WHO dan Kemenkes. Bukan pengganti pemeriksaan dokter anak atau posyandu.</p>
+</section>
+
+</main>
+
+<nav class="tabs">
+  <button class="tab on" data-tab="today"><svg viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="17" rx="5"/><path d="M8 12.5l2.7 2.7L16 9.5"/></svg><span>Hari Ini</span></button>
+  <button class="tab" data-tab="menu"><svg viewBox="0 0 24 24"><path d="M5 3v18M5 3c2 0 3 1.5 3 4s-1 4-3 4"/><path d="M15 3v7a3 3 0 0 0 3 3v8"/><path d="M18 3v7"/></svg><span>Menu</span></button>
+  <button class="tab" data-tab="cal"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="4"/><path d="M3.5 10h17M8.5 3v4M15.5 3v4"/></svg><span>Kalender</span></button>
+  <button class="tab" data-tab="weight"><svg viewBox="0 0 24 24"><path d="M3.5 20h17"/><path d="M4.5 16l5-6 4 4 6-8"/></svg><span>Berat</span></button>
+  <button class="tab" data-tab="tips"><svg viewBox="0 0 24 24"><path d="M9.5 19h5M10.5 22h3"/><path d="M12 2.5a6 6 0 0 0-4 10.5c.7.8 1 1.6 1 2.5v.5h6V15c0-.9.3-1.7 1-2.5a6 6 0 0 0-4-10z"/></svg><span>Panduan</span></button>
+</nav>
+
+<script>
+/* ================= DATA ================= */
+const DAYS=["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+const SHORT=["Min","Sen","Sel","Rab","Kam","Jum","Sab"];
+const DOW=["Sn","Sl","Rb","Km","Jm","Sb","Mg"];           // kalender mulai Senin
+const MONTHS=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+
+// slot template: [time, label]
+const SLOTS=[["06.30","Sarapan"],["09.00","Selingan pagi"],["12.00","Makan siang"],["15.00","Selingan sore"],["18.00","Makan malam"],["20.00","Sebelum tidur"]];
+
+// warna pastel per waktu makan
+const TONE=["var(--butter)","var(--mint)","var(--blush)","var(--lilac)","var(--sky)","var(--peach)"];
+
+// ilustrasi datar per waktu makan
+const ART=[
+ // matahari terbit
+ `<circle cx="16" cy="16.5" r="5.6" fill="var(--c)" stroke="currentColor" stroke-width="1.7"/><path d="M16 5.5v2.6M24.4 8.6l-1.9 1.9M26.5 17.5h-2.6M8.1 17.5H5.5M9.5 10.5L7.6 8.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M5 24.5h22" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>`,
+ // cangkir
+ `<path d="M7.5 13h14v6.5a5.5 5.5 0 0 1-5.5 5.5h-3A5.5 5.5 0 0 1 7.5 19.5z" fill="var(--c)" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M21.5 15h2.4a3 3 0 0 1 0 6h-2.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M12.5 6.5v3M17 6.5v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>`,
+ // mangkuk + sendok
+ `<path d="M4.5 14.5h16.5a8.25 8.25 0 0 1-16.5 0z" fill="var(--c)" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M25.5 15.5v9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><ellipse cx="25.5" cy="11" rx="2.7" ry="4" fill="var(--c)" stroke="currentColor" stroke-width="1.7"/>`,
+ // apel
+ `<path d="M16 11c-1.6-1.5-4.1-1.8-6.1 0-2.4 2.1-2.6 6.5-1 10.1 1.4 3.2 3.5 4.9 4.9 4.9.8 0 1.4-.4 2.2-.4s1.4.4 2.2.4c1.4 0 3.5-1.7 4.9-4.9 1.6-3.6 1.4-8-1-10.1-2-1.8-4.5-1.5-6.1 0z" fill="var(--c)" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M16 11V7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16.4 9.2c2.4-.2 3.8-1.5 4.1-3.3-2.4-.2-3.9.9-4.1 3.3z" fill="currentColor"/>`,
+ // tudung saji
+ `<path d="M5.5 20.5a10.5 10.5 0 0 1 21 0z" fill="var(--c)" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M4 20.5h24" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M16 10V8.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="16" cy="7" r="1.5" fill="currentColor"/>`,
+ // bulan + bintang
+ `<path d="M22.4 20.6A9.4 9.4 0 0 1 12 11.2c0-1.6.4-3.1 1.1-4.4a10.4 10.4 0 1 0 13.7 13.7c-1.3.7-2.8 1.1-4.4 1.1z" fill="var(--c)" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M23.8 4.4l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" fill="currentColor"/>`
+];
+
+// per day: [dish, note, kcal, fatBoost, milkMl]
+const MENU={
+1:[ // Senin
+ ["Bubur nasi ayam suwir","Telur rebus + ½ sdt minyak wijen",300,"minyak wijen",0],
+ ["Susu + biskuit keju","Biskuit dioles keju parut",230,"keju",200],
+ ["Nasi + opor ayam","Kuah santan disiram ke nasi, tumis buncis",340,"santan",0],
+ ["Alpukat kerok","Dicampur sedikit susu kental",180,"alpukat",0],
+ ["Nasi tim ikan kembung","Sup wortel–kentang bersantan",300,"santan",0],
+ ["Susu sebelum tidur","",130,"",200]],
+2:[ // Selasa
+ ["Roti selai kacang","Telur orak-arik dimasak mentega",320,"mentega + selai kacang",0],
+ ["Susu + pisang goreng","",240,"",200],
+ ["Nasi + semur daging cincang","Tahu telur, tumis wortel",345,"",0],
+ ["Bubur kacang hijau","Kuah santan kental",190,"santan",0],
+ ["Nasi + sayur lodeh","Perkedel kentang telur",300,"santan",0],
+ ["Susu sebelum tidur","",130,"",200]],
+3:[ // Rabu
+ ["Nasi goreng telur","Digoreng pakai margarin, ayam suwir",330,"margarin",0],
+ ["Susu + ubi kukus","Diparut keju di atasnya",240,"keju",200],
+ ["Nasi + hati ayam bumbu kecap","Tumis bayam santan · tinggi zat besi",330,"santan",0],
+ ["Smoothie alpukat","Alpukat diblender dengan susu",190,"alpukat",0],
+ ["Bihun goreng telur","Ayam suwir, irisan sawi",290,"",0],
+ ["Susu sebelum tidur","",130,"",200]],
+4:[ // Kamis
+ ["Oatmeal susu","Pisang potong + 1 sdt selai kacang",310,"selai kacang",0],
+ ["Susu + bolu kukus","",235,"",200],
+ ["Nasi + ikan tongkol goreng","Tempe goreng, sayur bening",330,"",0],
+ ["Kolak pisang","Kuah santan",195,"santan",0],
+ ["Nasi tim + telur puyuh","Sup ayam kental",300,"",0],
+ ["Susu sebelum tidur","",130,"",200]],
+5:[ // Jumat
+ ["Telur dadar keju","Nasi atau roti dengan mentega",325,"mentega + keju",0],
+ ["Susu + roti pisang","",240,"",200],
+ ["Nasi + gulai ayam","Kuah santan, tumis labu siam",350,"santan",0],
+ ["Puding susu","Atau kentang goreng buatan sendiri",180,"",0],
+ ["Nasi + tahu telur","Sup bakso ayam",295,"",0],
+ ["Susu sebelum tidur","",130,"",200]],
+6:[ // Sabtu
+ ["Bubur ayam","Tambahkan 1 kuning telur ekstra",305,"kuning telur",0],
+ ["Susu + roti selai kacang","",245,"selai kacang",200],
+ ["Nasi + ikan nila goreng","Tempe, tumis kangkung",330,"",0],
+ ["Pisang kukus parut keju","",180,"keju",0],
+ ["Nasi + ayam bumbu rendang","Semur telur",320,"santan",0],
+ ["Susu sebelum tidur","",130,"",200]],
+0:[ // Minggu
+ ["Pancake pisang","Adonan telur + susu, olesan mentega",320,"mentega",0],
+ ["Susu + buah potong","",215,"",200],
+ ["Soto ayam bersantan","Nasi + telur rebus",340,"santan",0],
+ ["Bubur sumsum","Kuah santan kental",190,"santan",0],
+ ["Nasi + capcay ayam","Telur puyuh",295,"",0],
+ ["Susu sebelum tidur","",130,"",200]]
+};
+
+const BOOSTS=[["1 sdt minyak kelapa / zaitun","+40 kkal"],["1 sdm santan kental","+35 kkal"],["1 sdm keju parut","+40 kkal"],["¼ buah alpukat","+60 kkal"],["1 sdt selai kacang","+30 kkal"],["1 kuning telur ekstra","+55 kkal"]];
+
+const RULES=[
+ ["Susu maksimal 400 ml sehari","Lebih dari itu anak kenyang susu dan menolak makan padat. Susu berlebih juga menghambat penyerapan zat besi."],
+ ["Jangan beri susu 1 jam sebelum makan","Termasuk jus manis dan teh. Di antara jam makan cukup air putih."],
+ ["Lemak dulu, baru porsi","Lemak memberi 9 kkal per gram, dua kali lipat karbohidrat. Menambah lemak menaikkan kalori tanpa membuat piring penuh."],
+ ["Batasi waktu makan 20–30 menit","Setelah itu selesai tanpa drama. Jangan mengejar dengan sendok — anak justru makin menolak jangka panjang."],
+ ["Makan di meja, tanpa layar","Anak yang terdistraksi TV atau gadget makan jauh lebih sedikit."],
+ ["Obat cacing tiap 6 bulan","Dianjurkan sejak usia 1 tahun. Cacingan menyedot nutrisi tanpa gejala jelas."],
+ ["Protein hewani di setiap makan besar","Ikan, telur, hati ayam, daging. Lebih menentukan pertumbuhan dibanding tempe atau tahu."],
+ ["Jangan kurangi waktu bermain","Anak yang aktif bergerak justru lebih lapar."]];
+
+// WHO weight-for-age, boys (kg) — [month, -3SD, -2SD, -1SD, median, +1SD, +2SD]
+const WHO=[
+[12,6.9,7.7,8.6,9.6,10.8,12.0],[15,7.3,8.3,9.2,10.3,11.5,12.8],[18,7.7,8.8,9.8,10.9,12.2,13.7],
+[21,8.2,9.2,10.3,11.5,12.9,14.5],[24,8.6,9.7,10.8,12.2,13.6,15.3],[27,9.0,10.1,11.3,12.7,14.3,16.1],
+[30,9.4,10.5,11.8,13.3,15.0,16.9],[33,9.7,10.9,12.3,13.8,15.6,17.6],[36,10.0,11.3,12.7,14.3,16.2,18.3],
+[39,10.3,11.7,13.1,14.8,16.8,19.0],[42,10.6,12.0,13.5,15.3,17.4,19.7],[45,10.9,12.4,14.0,15.8,18.0,20.4],
+[48,11.2,12.7,14.3,16.3,18.6,21.2],[51,11.5,13.1,14.8,16.8,19.2,21.9],[54,11.8,13.4,15.2,17.3,19.9,22.7],
+[57,12.1,13.7,15.6,17.8,20.5,23.4],[60,12.4,14.1,16.0,18.3,21.1,24.2]];
+
+const GOAL=1250, MILK_MAX=400;
+
+/* ================= TANGGAL ================= */
+// kunci tanggal memakai waktu lokal — toISOString() memakai UTC dan
+// akan meleset satu hari sebelum jam 07.00 di WIB
+function keyOf(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function dateOf(k){const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d);}
+const todayKey=()=>keyOf(new Date());
+const dowOf=k=>dateOf(k).getDay();
+function longDate(k){
+  const d=dateOf(k);
+  return DAYS[d.getDay()]+', '+d.toLocaleDateString('id-ID',{day:'numeric',month:'long'});
+}
+
+/* ================= PENYIMPANAN ================= */
+let hist={};                       // { "2026-08-03": [0,2,5], ... }
+let log=[{age:30,kg:12.0}];
+let selKey=todayKey();             // tanggal yang sedang dibuka
+let viewDay=new Date().getDay();   // hari yang dilihat di tab Menu
+let calCursor=new Date();          // bulan yang ditampilkan di kalender
+
+function read(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function write(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function drop(k){try{localStorage.removeItem(k);}catch(e){}}
+
+function load(){
+  let migrated=false;
+  try{const d=JSON.parse(read('history'));if(d&&typeof d==='object')hist=d;}catch(e){}
+  // pindahkan format lama {date, ids} yang hanya menyimpan satu hari
+  if(!Object.keys(hist).length){
+    try{const o=JSON.parse(read('ticks'));
+      if(o&&o.date&&Array.isArray(o.ids)&&o.ids.length){hist[o.date]=o.ids;migrated=true;}}catch(e){}
+  }
+  if(migrated){saveHist();drop('ticks');}
+  try{const d=JSON.parse(read('weightlog'));if(Array.isArray(d))log=d;}catch(e){}
+  renderDay();renderWeek();renderCal();renderLog();drawChart();mastAge();
+}
+function saveHist(){write('history',JSON.stringify(hist));}
+function saveLog(){write('weightlog',JSON.stringify(log));}
+
+function doneOn(k){return new Set(hist[k]||[]);}
+function toggleOn(k,i){
+  const s=doneOn(k);
+  s.has(i)?s.delete(i):s.add(i);
+  if(s.size)hist[k]=[...s].sort((a,b)=>a-b); else delete hist[k];
+  saveHist();
+}
+// rekap satu hari: jumlah waktu makan, kalori, susu
+function tally(k){
+  const menu=MENU[dowOf(k)],s=doneOn(k);
+  let kc=0,ml=0;
+  menu.forEach((m,i)=>{if(s.has(i)){kc+=m[2];ml+=m[4];}});
+  return {n:s.size,kcal:kc,milk:ml};
+}
+
+/* ================= RENDER ================= */
+const nowMins=()=>{const d=new Date();return d.getHours()*60+d.getMinutes();};
+const slotMins=i=>{const [h,m]=SLOTS[i][0].split('.').map(Number);return h*60+m;};
+
+function nextIndex(k){
+  if(k!==todayKey())return -1;
+  const t=nowMins(),s=doneOn(k);
+  for(let i=0;i<SLOTS.length;i++) if(!s.has(i)&&slotMins(i)>=t) return i;
+  return -1;
+}
+
+function mealHTML(m,i,mode,nextI,doneSet){
+  const [time,label]=SLOTS[i];
+  const [dish,note,kcal,fat,milk]=m;
+  const live=mode==='live';
+  const done=live&&doneSet.has(i);
+  const late=live&&!done&&nextI!==-1&&nowMins()>slotMins(i);
+  const isNext=live&&i===nextI;
+  const cls=['meal',done?'done':'',late?'late':'',isNext?'next':''].filter(Boolean).join(' ');
+  return `<div class="${cls}" style="--c:${TONE[i]}"${live?` data-i="${i}" role="button" tabindex="0" aria-pressed="${done}"`:''}>
+    <div class="art"><svg viewBox="0 0 32 32" aria-hidden="true">${ART[i]}</svg></div>
+    <div class="body">
+      <div class="top"><span class="time">${time} · ${label}</span><span class="kcal">${kcal} kkal</span></div>
+      <div class="dish">${dish}</div>
+      ${note?`<div class="note">${note}</div>`:''}
+      ${isNext?'<span class="next-pill">Berikutnya</span>':''}
+      ${fat?`<span class="tag">+ ${fat}</span>`:''}
+      ${milk?`<span class="tag">${milk} ml susu</span>`:''}
+    </div>
+    ${live?`<button class="check" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></button>`:''}
+  </div>`;
+}
+
+function mastAge(){
+  const s=[...log].sort((a,b)=>a.age-b.age);
+  const last=s[s.length-1];
+  document.getElementById('mastAge').textContent=last?last.age+' bln · '+last.kg.toFixed(1).replace('.',',')+' kg':'belum ditimbang';
+}
+
+/* halaman harian — mengikuti selKey, bukan selalu hari ini */
+function renderDay(){
+  const isToday=selKey===todayKey();
+  const menu=MENU[dowOf(selKey)],set=doneOn(selKey),nx=nextIndex(selKey);
+
+  if(current==='today'){
+    document.getElementById('navTitle').textContent=isToday?'Hari Ini':DAYS[dowOf(selKey)];
+    document.getElementById('navSub').textContent=longDate(selKey);
+    document.getElementById('backToday').hidden=isToday;
+    document.getElementById('mastAge').hidden=!isToday;
+  }
+
+  const total=menu.reduce((s,m)=>s+m[2],0);
+  document.getElementById('heroSub').textContent=
+    DAYS[dowOf(selKey)]+' · 6 waktu makan · '+total.toLocaleString('id-ID')+' kkal terjadwal';
+
+  document.getElementById('todayList').innerHTML=menu.map((m,i)=>mealHTML(m,i,'live',nx,set)).join('');
+  document.querySelectorAll('#todayList .meal').forEach(el=>{
+    const toggle=()=>{toggleOn(selKey,+el.dataset.i);renderDay();renderWeek();renderCal();};
+    el.onclick=toggle;
+    el.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();toggle();}};
+  });
+
+  const t=tally(selKey);
+  document.getElementById('kcalNow').textContent=t.kcal.toLocaleString('id-ID');
+  document.getElementById('kcalGoal').textContent='/ '+GOAL.toLocaleString('id-ID')+' kkal';
+  document.getElementById('kcalBar').style.width=Math.min(100,t.kcal/GOAL*100)+'%';
+  document.getElementById('milkNow').textContent=t.milk;
+  const mb=document.getElementById('milkBar');
+  mb.style.width=Math.min(100,t.milk/MILK_MAX*100)+'%';
+  mb.classList.toggle('over',t.milk>MILK_MAX);
+  document.getElementById('milkNote').textContent=t.milk>MILK_MAX?'/ 400 ml · melebihi batas':'/ 400 ml';
+}
+
+/* strip minggu berjalan, mulai Senin */
+function renderWeek(){
+  const now=new Date(),tk=todayKey();
+  const mon=new Date(now);mon.setDate(now.getDate()-((now.getDay()+6)%7));
+  let s='';
+  for(let i=0;i<7;i++){
+    const d=new Date(mon);d.setDate(mon.getDate()+i);
+    const k=keyOf(d),t=tally(k),p=Math.round(t.n/SLOTS.length*100);
+    const future=k>tk;
+    const cls=['wday',k===tk?'today':'',k===selKey?'sel':'',future?'future':''].filter(Boolean).join(' ');
+    s+=`<button class="${cls}" data-k="${k}"${future?' disabled':''}
+        aria-label="${longDate(k)}, ${t.n} dari 6 waktu makan">
+      <span class="l">${DOW[i]}</span>
+      <span class="c"><span class="ring" style="--p:${p};--track:${t.n?'var(--teal-soft)':'transparent'}"></span><span class="n">${d.getDate()}</span></span>
+    </button>`;
+  }
+  const el=document.getElementById('weekStrip');
+  el.innerHTML=s;
+  el.querySelectorAll('.wday:not(.future)').forEach(b=>b.onclick=()=>{
+    selKey=b.dataset.k;renderDay();renderWeek();renderCal();
+  });
+}
+
+/* kalender bulanan */
+function renderCal(){
+  const y=calCursor.getFullYear(),m=calCursor.getMonth(),tk=todayKey();
+  document.getElementById('calTitle').textContent=MONTHS[m]+' '+y;
+  const now=new Date();
+  document.getElementById('calNext').disabled=(y===now.getFullYear()&&m===now.getMonth());
+
+  const off=(new Date(y,m,1).getDay()+6)%7;           // Senin = 0
+  const dim=new Date(y,m+1,0).getDate();
+  let s=DOW.map(d=>`<div class="dow">${d}</div>`).join('');
+  for(let i=0;i<off;i++)s+='<div class="cell blank"></div>';
+  for(let d=1;d<=dim;d++){
+    const k=keyOf(new Date(y,m,d)),t=tally(k),p=Math.round(t.n/SLOTS.length*100);
+    const future=k>tk;
+    const cls=['cell',k===tk?'today':'',k===selKey?'sel':'',future?'future':''].filter(Boolean).join(' ');
+    s+=`<button class="${cls}" data-k="${k}"${future?' disabled':''}
+        aria-label="${longDate(k)}, ${t.n} dari 6 waktu makan tercatat">
+      <span class="ring" style="--p:${p};--track:${t.n?'var(--teal-soft)':'transparent'}"></span>
+      <span class="n">${d}</span></button>`;
+  }
+  const grid=document.getElementById('calGrid');
+  grid.innerHTML=s;
+  grid.querySelectorAll('.cell:not(.blank):not(.future)').forEach(b=>b.onclick=()=>{
+    selKey=b.dataset.k;
+    renderDay();renderWeek();renderCal();
+    document.querySelector('.tab[data-tab="today"]').click();
+  });
+
+  monthStats(y,m);
+}
+
+function monthStats(y,m){
+  const tk=todayKey(),dim=new Date(y,m+1,0).getDate();
+  let elapsed=0,recorded=0,full=0,kcal=0,overMilk=0;
+  for(let d=1;d<=dim;d++){
+    const k=keyOf(new Date(y,m,d));
+    if(k>tk)break;
+    elapsed++;
+    const t=tally(k);
+    if(t.n){recorded++;kcal+=t.kcal;}
+    if(t.n===SLOTS.length)full++;
+    if(t.milk>MILK_MAX)overMilk++;
+  }
+  const now=new Date(),isThis=(y===now.getFullYear()&&m===now.getMonth());
+  document.getElementById('monthHead').textContent=isThis?'Bulan ini':MONTHS[m]+' '+y;
+  document.getElementById('stDays').firstChild.textContent=recorded;
+  document.getElementById('stDaysOf').textContent='/ '+elapsed;
+  document.getElementById('stFull').textContent=full;
+  document.getElementById('stAvg').firstChild.textContent=
+    recorded?Math.round(kcal/recorded).toLocaleString('id-ID'):'0';
+  document.getElementById('stMilk').textContent=overMilk;
+}
+
+function renderMenu(){
+  document.getElementById('dayPicker').innerHTML=[1,2,3,4,5,6,0].map(i=>
+    `<button class="day${i===viewDay?' on':''}" data-d="${i}">${SHORT[i]}</button>`).join('');
+  document.querySelectorAll('.day').forEach(b=>b.onclick=()=>{viewDay=+b.dataset.d;renderMenu();});
+  document.getElementById('menuList').innerHTML=
+    MENU[viewDay].map((m,i)=>mealHTML(m,i,'static',-1,null)).join('');
+  if(current==='menu')document.getElementById('navSub').textContent=DAYS[viewDay]+' · '+
+    MENU[viewDay].reduce((s,m)=>s+m[2],0).toLocaleString('id-ID')+' kkal';
+}
+
+function interp(month,col){
+  if(month<=WHO[0][0])return WHO[0][col];
+  if(month>=WHO[WHO.length-1][0])return WHO[WHO.length-1][col];
+  for(let i=0;i<WHO.length-1;i++){
+    if(month>=WHO[i][0]&&month<=WHO[i+1][0]){
+      const t=(month-WHO[i][0])/(WHO[i+1][0]-WHO[i][0]);
+      return WHO[i][col]+t*(WHO[i+1][col]-WHO[i][col]);
+    }}
+}
+
+function drawChart(){
+  const W=340,H=250,L=30,R=10,T=14,B=28;
+  const x0=12,x1=60,y0=6,y1=24;
+  const px=m=>L+(m-x0)/(x1-x0)*(W-L-R);
+  const py=k=>T+(y1-k)/(y1-y0)*(H-T-B);
+  const months=[];for(let m=x0;m<=x1;m+=3)months.push(m);
+  const band=(a,b)=>months.map(m=>`${px(m)},${py(interp(m,a))}`).join(' ')+' '+
+    months.slice().reverse().map(m=>`${px(m)},${py(interp(m,b))}`).join(' ');
+
+  let s='';
+  s+=`<polygon points="${band(1,2)}" fill="var(--blush)"/>`;
+  s+=`<polygon points="${band(2,3)}" fill="var(--butter)"/>`;
+  s+=`<polygon points="${band(3,5)}" fill="var(--mint)"/>`;
+  s+=`<polyline points="${months.map(m=>`${px(m)},${py(interp(m,4))}`).join(' ')}" fill="none" stroke="var(--teal)" stroke-width="1.4" stroke-dasharray="5 4" opacity=".45" stroke-linecap="round"/>`;
+
+  for(let k=6;k<=24;k+=6)
+    s+=`<text x="${L-8}" y="${py(k)+4}" font-size="10" fill="var(--muted)" text-anchor="end">${k}</text>`;
+  for(let m=12;m<=60;m+=12)
+    s+=`<text x="${px(m)}" y="${H-B+18}" font-size="10" fill="var(--muted)" text-anchor="middle">${m/12} th</text>`;
+  s+=`<text x="${L-8}" y="${T+2}" font-size="9.5" fill="var(--muted)" text-anchor="end">kg</text>`;
+
+  const pts=[...log].sort((a,b)=>a.age-b.age);
+  if(pts.length>1)
+    s+=`<polyline points="${pts.map(p=>`${px(p.age)},${py(p.kg)}`).join(' ')}" fill="none" stroke="var(--teal)" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>`;
+  pts.forEach(p=>{
+    s+=`<circle cx="${px(p.age)}" cy="${py(p.kg)}" r="5" fill="var(--surface)" stroke="var(--teal)" stroke-width="2.6"/>`;
+  });
+  const last=pts[pts.length-1];
+  if(last){
+    const cx=px(last.age),cy=py(last.kg)-13,txt=last.kg.toString().replace('.',',')+' kg';
+    const w=txt.length*6.4+14;
+    s+=`<rect x="${cx-w/2}" y="${cy-12}" width="${w}" height="19" rx="9.5" fill="var(--teal)"/>`;
+    s+=`<text class="callout" x="${cx}" y="${cy+1.5}" font-size="11" fill="var(--surface)" text-anchor="middle">${txt}</text>`;
+  }
+
+  document.getElementById('chart').innerHTML=s;
+  verdict(last);
+}
+
+function verdict(p){
+  const el=document.getElementById('verdict');
+  if(!p){el.textContent='Belum ada penimbangan yang dicatat. Isi umur dan berat di bawah untuk mulai memplot kurva.';return;}
+  const m3=interp(p.age,1),m2=interp(p.age,2),m1=interp(p.age,3),md=interp(p.age,4),p1=interp(p.age,5);
+  const f=n=>n.toFixed(1).replace('.',',');
+  let status,extra;
+  if(p.kg<m3){status='<b class="st bad">Berat badan sangat kurang</b>';extra='Perlu pemeriksaan dokter anak segera.';}
+  else if(p.kg<m2){status='<b class="st warn">Berat badan kurang</b>';extra='Perlu penanganan gizi terarah. Konsultasikan ke posyandu atau dokter anak.';}
+  else if(p.kg<m1){status='<b class="st ok">Berat badan normal</b>';extra=`Berada di bagian bawah rentang normal (${f(m2)}–${f(p1)} kg). Selama grafik terus naik mengikuti kurva, ini tidak masalah.`;}
+  else if(p.kg<=p1){status='<b class="st ok">Berat badan normal</b>';extra=`Rentang normal di usia ini ${f(m2)}–${f(p1)} kg, dengan median ${f(md)} kg.`;}
+  else{status='<b class="st warn">Risiko berat badan lebih</b>';extra='Perhatikan porsi lemak tambahan dan camilan manis.';}
+  const naik=(()=>{const s=[...log].sort((a,b)=>a.age-b.age);if(s.length<2)return'';
+    const a=s[s.length-2],b=s[s.length-1],d=(b.kg-a.kg),mo=b.age-a.age;
+    if(mo<=0)return'';
+    const per=(d/mo);
+    if(per<=0)return' <b class="st bad">Berat tidak naik</b> sejak penimbangan sebelumnya — jadwalkan pemeriksaan.';
+    return ` Kenaikan terakhir ${per.toFixed(2).replace('.',',')} kg per bulan.`;})();
+  el.innerHTML=`Umur ${p.age} bulan, ${f(p.kg)} kg — ${status}. ${extra}${naik}`;
+}
+
+function renderLog(){
+  const el=document.getElementById('logList');
+  if(!log.length){
+    el.innerHTML=`<div class="empty"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 26h20M8 26V13l8-6 8 6v13"/><path d="M13 26v-7h6v7"/></svg>Belum ada timbangan yang dicatat.</div>`;
+    return;
+  }
+  el.innerHTML=[...log].sort((a,b)=>b.age-a.age).map(p=>
+    `<div class="logrow"><span>${p.age} bulan${p.age>=12?`<em>${Math.floor(p.age/12)} th ${p.age%12} bln</em>`:''}</span>
+     <span><span class="w">${p.kg.toFixed(1).replace('.',',')} kg</span>
+     <button class="del" data-a="${p.age}" aria-label="Hapus catatan ${p.age} bulan">×</button></span></div>`).join('');
+  el.querySelectorAll('.del').forEach(b=>b.onclick=()=>{
+    log=log.filter(x=>x.age!=+b.dataset.a);saveLog();renderLog();drawChart();mastAge();});
+}
+
+document.getElementById('addBtn').onclick=()=>{
+  const a=parseInt(document.getElementById('inAge').value),k=parseFloat(document.getElementById('inKg').value);
+  if(isNaN(a)||isNaN(k)||a<0||a>60||k<2||k>30){alert('Isi umur 0–60 bulan dan berat 2–30 kg.');return;}
+  log=log.filter(x=>x.age!==a);log.push({age:a,kg:k});
+  document.getElementById('inAge').value='';document.getElementById('inKg').value='';
+  saveLog();renderLog();drawChart();mastAge();
+};
+
+document.getElementById('backToday').onclick=()=>{
+  selKey=todayKey();calCursor=new Date();
+  renderDay();renderWeek();renderCal();
+};
+document.getElementById('calPrev').onclick=()=>{
+  calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()-1,1);renderCal();
+};
+document.getElementById('calNext').onclick=()=>{
+  calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()+1,1);renderCal();
+};
+
+document.getElementById('boostList').innerHTML=BOOSTS.map(b=>
+  `<div class="leader"><span>${b[0]}</span><span class="val">${b[1]}</span></div>`).join('');
+document.getElementById('ruleList').innerHTML=RULES.map(r=>
+  `<div class="tip"><h3>${r[0]}</h3><p>${r[1]}</p></div>`).join('');
+
+/* ================= TAB ================= */
+const TITLES={menu:'Menu Mingguan',cal:'Kalender',weight:'Berat Badan',tips:'Panduan'};
+let current='today';
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  current=b.dataset.tab;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on',p.id==='p-'+current));
+  const sub=document.getElementById('navSub');
+  const back=document.getElementById('backToday'),age=document.getElementById('mastAge');
+  if(current!=='today'){back.hidden=true;age.hidden=false;}
+  if(current==='today'){renderDay();}
+  else{
+    document.getElementById('navTitle').textContent=TITLES[current];
+    if(current==='menu')renderMenu();
+    else if(current==='cal')sub.textContent='Catatan makan harian';
+    else if(current==='weight')sub.textContent='Standar WHO · anak laki-laki';
+    else sub.textContent='Gizi & kebiasaan makan';
+  }
+  window.scrollTo(0,0);
+});
+
+// hari berganti saat aplikasi terbuka
+setInterval(()=>{
+  if(selKey!==todayKey()&&document.getElementById('backToday').hidden){
+    selKey=todayKey();calCursor=new Date();renderWeek();renderCal();
+  }
+  if(current==='today')renderDay();
+},60000);
+
+renderMenu();load();
+</script>
+</body>
+</html>
