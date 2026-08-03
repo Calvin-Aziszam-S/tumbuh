@@ -1,6 +1,6 @@
 # Tumbuh
 
-Aplikasi web satu berkas untuk mendampingi orang tua menaikkan berat badan anak: jadwal makan harian, catatan per tanggal, dan kurva berat menurut umur standar WHO.
+Aplikasi web ringan untuk mendampingi orang tua menaikkan berat badan anak: jadwal makan harian, catatan per tanggal, dan kurva berat menurut umur standar WHO.
 
 **Buka:** https://calvin-aziszam-s.github.io/tumbuh/
 
@@ -14,7 +14,7 @@ Aplikasi web satu berkas untuk mendampingi orang tua menaikkan berat badan anak:
 
 ## Catatan teknis
 
-- Satu berkas `index.html`, tanpa dependensi eksternal — semua CSS, JavaScript, dan ilustrasi SVG tertanam di dalamnya. Jalan sepenuhnya offline.
+- Tanpa dependensi eksternal — semua CSS, JavaScript, dan ilustrasi SVG tertanam di `index.html`, dengan satu aset ikon untuk Layar Utama. Jalan sepenuhnya offline.
 - Data tersimpan di `localStorage` perangkat masing-masing. Tidak ada server, tidak ada akun, tidak ada data yang dikirim ke mana pun.
 - Kunci tanggal memakai waktu lokal, bukan UTC, supaya pergantian hari tepat di zona waktu Indonesia.
 - Mendukung mode terang dan gelap, dan sudah disiapkan untuk dipasang ke Layar Utama iPhone (Safari → Bagikan → Tambahkan ke Layar Utama).
